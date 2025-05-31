@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/global.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/animation.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/study.css')}}" />
+    <title>Study - NeuroFlash</title>
+  </head>
+  <body>
+     <div class="app-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h1>Neuro<span>Flash</span></h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li class="active"><a href="/study"><i class="fas fa-book-open"></i><span>Study</span></a></li>
+                <li><a href="/results"><i class="fas fa-chart-line"></i><span>Results</span></a></li>
+                <li><a href="/profile"><i class="fas fa-user"></i><span>Profile</span></a></li>
+                <li><a href="/leaderboard"><i class="fas fa-trophy"></i><span>Leaderboard</span></a></li>
+                <li><a href="/api/logout"><i class="fas fa-sign-out-alt"></i><span>Log Out</span></a></li>
+            </ul>
+        </nav>
+
+      <main class="main-content">
+        <header class="content-header">
+          <div class="deck-info">
+            <h2 id="deck-title">NeuroFlash Study</h2>
+            <p id="card-counter"></p>
+          </div>
+          <div class="study-progress">
+            <div class="progress" style="width: 0%"></div>
+          </div>
+        </header>
+
+        <!-- Added animate-in class for initial animation -->
+        <div class="study-container animate-in">
+          <!-- Flashcard - Added animate-in class -->
+          <div class="flashcard animate-in" id="flashcard">
+            <div class="card-inner">
+              <div class="card-front" id="card-front">
+                <p>Select a deck to begin.</p>
+              </div>
+              <div class="card-back" id="card-back">
+                <p>Choose a deck from the dropdown above.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Study Controls - Original JS manages display -->
+          <div class="study-controls" style="display: none;">
+            <button class="control-btn" data-difficulty="hard">
+              <i class="fas fa-times"></i> Hard
+            </button>
+            <!-- Assuming "Good" corresponds to "medium" difficulty in CSS -->
+            <button class="control-btn" data-difficulty="good">
+              <i class="fas fa-clock"></i> Good
+            </button>
+            <button class="control-btn" data-difficulty="easy">
+              <i class="fas fa-check"></i> Easy
+            </button>
+          </div>
+
+          <!-- Deck Selection - Added animate-in class -->
+          <div class="deck-selection animate-in delay-200">
+            <label for="deck-select">Choose a deck:</label>
+            <select id="deck-select">
+               <option value="">Select a deck...</option>
+            </select>
+          </div>
+        </div>
+      </main>
+    </div>
+
+  <script src="{{url_for('static', filename='js/study.js')}}"></script>
+
+  <script>
+        document.addEventListener('DOMContentLoaded', function() {
+             // Add animate-in class to the main study container and flashcard
+             // These classes are already added in the static HTML now.
+             // This script ensures that if they were removed or for initial load consistency.
+
+            // Handle flashcard flip click
+            const flashcard = document.getElementById('flashcard');
+            if (flashcard) {
+                flashcard.addEventListener('click', function() {
+                    this.classList.toggle('flipped');
+                });
+            }
+
+            // Note: Button click logic and card loading/flipping is handled by study.js
+            // We are only adding visual enhancements and animations.
+            // Animations like fading in new cards or buttons appearing
+            // will depend on how study.js manages their display or presence in the DOM.
+            // The initial 'animate-in' on the container and flashcard provides a nice entry.
+        });
+  </script>
+  </body>
+</html>

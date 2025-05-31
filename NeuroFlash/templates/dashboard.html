@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/global.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/dashboard.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/animation.css')}}" />
+    <title>Dashboard - NeuroFlash</title>
+
+    <style>
+        /* Styles for Deck Context Menu */
+
+        .deck-card.fade-out {
+  animation: fadeOutAndShrink 0.5s forwards;
+}
+
+@keyframes fadeOutAndShrink {
+  from {
+    opacity: 0.5; 
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px); 
+    height: 0; 
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border: none; 
+    overflow: hidden; 
+  }
+}
+        .deck-context-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--color-background);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-md);
+            z-index: 10;
+            list-style: none;
+            padding: 5px 0;
+            margin: 0;
+            min-width: 150px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+        }
+        .deck-options-btn.menu-open .deck-context-menu {
+             opacity: 1;
+             visibility: visible;
+             transform: translateY(0);
+        }
+        .deck-context-menu li { margin: 0; padding: 0; }
+        .deck-context-menu button {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            padding: 10px 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--color-foreground);
+            font-size: var(--font-size-base);
+            transition: background-color 0.1s ease;
+        }
+        .deck-context-menu button i { margin-right: 10px; width: 15px; text-align: center; color: var(--color-gray-600); }
+        .deck-context-menu button:hover { background-color: var(--color-gray-200); }
+        .deck-context-menu .delete-option { color: var(--color-danger); }
+        .deck-context-menu .delete-option i { color: var(--color-danger); }
+        .btn.icon-btn.deck-options-btn { position: relative; margin: 0; padding: 0 5px; }
+
+        .dashboard-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--color-gray-300);
+        }
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            font-size: 1rem;
+            color: var(--color-gray-700);
+            border-bottom: 3px solid transparent;
+            margin-right: 10px;
+            transition: color 0.2s ease, border-bottom-color 0.2s ease;
+            margin-bottom: -1px; 
+        }
+        .tab-button:hover {
+            color: var(--color-primary-dark);
+        }
+        .tab-button.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .card-browser-section {
+             background-color: var(--color-gray-100);
+             border-radius: var(--border-radius-md); 
+             box-shadow: var(--shadow-sm); 
+        }
+        .card-browser-filters {
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--color-gray-200); 
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--color-gray-300); 
+        }
+        .card-browser-filters input[type="search"],
+        .card-browser-filters select {
+            padding: 10px 12px;
+            border: 1px solid var(--color-gray-400); 
+            border-radius: var(--border-radius-sm);
+            color: var(--color-foreground); 
+            font-size: 0.9rem;
+            background-color: var(--color-gray-100); 
+        }
+         .card-browser-filters input[type="search"]::placeholder { 
+            color: var(--color-gray-500);
+        }
+        .card-browser-filters input[type="search"] {
+            flex-grow: 1;
+            min-width: 200px; 
+        }
+        .card-browser-filters select[multiple] {
+            min-width: 200px; 
+             height: auto; 
+        }
+         .card-browser-actions {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .card-results-container {
+            overflow-x: auto; 
+        }
+
+        .card-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+            border-radius: var(--border-radius-sm);
+            overflow: hidden; 
+        }
+        .card-results-table th,
+        .card-results-table td {
+            border: 1px solid var(--color-gray-300); 
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        .card-results-table th {
+            background-color: var(--color-gray-200); 
+            font-weight: 600;
+            color: var(--color-gray-700); 
+        }
+        .card-results-table tbody tr:nth-child(even) {
+            background-color: var(--color-gray-100); 
+        }
+         .card-results-table tbody tr:nth-child(odd) {
+            background-color: var(--color-background); 
+        }
+        .card-results-table tbody tr:hover {
+            background-color: var(--color-primary-light); 
+            color: var(--color-background); 
+        }
+        .card-results-table td input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        .card-results-table .card-content-cell {
+            max-width: 250px; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .card-results-table .card-actions-cell button {
+            margin-right: 5px;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+        }
+        #loading-cards-message,
+        #no-cards-found-message,
+        #card-browser-initial-message {
+            padding: 20px;
+            text-align: center;
+            color: var(--color-gray-600);
+            background-color: var(--color-gray-200); 
+            border-radius: var(--border-radius-sm);
+            margin-top: 20px;
+        }
+        #tag-filter-select option {
+            padding: 5px;
+            background-color: var(--color-gray-100); 
+            color: var(--color-foreground); 
+        }
+        .tag-badge {
+            display: inline-block;
+            background-color: var(--color-secondary);
+            color: var(--color-background); 
+            padding: 3px 8px;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.75rem;
+            margin-right: 5px;
+            margin-bottom: 3px;
+        }
+        .tag-item { 
+            background-color: var(--color-tertiary);
+            color: var(--color-gray-900); 
+            padding: 2px 6px;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.75rem;
+            margin-right: 4px;
+            display: inline-block;
+        }
+        .no-tags {
+            font-style: italic;
+            color: var(--color-gray-500);
+        }
+    </style>
+  </head>
+
+  <body>
+ <div class="app-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h1>Neuro<span>Flash</span></h1>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li> 
+                <li><a href="/study"><i class="fas fa-book-open"></i><span>Study</span></a></li>
+                <li><a href="/results"><i class="fas fa-chart-line"></i><span>Results</span></a></li>
+                <li><a href="/profile"><i class="fas fa-user"></i><span>Profile</span></a></li>
+                <li><a href="/leaderboard"><i class="fas fa-trophy"></i><span>Leaderboard</span></a></li>
+                <li><a href="/api/logout"><i class="fas fa-sign-out-alt"></i><span>Log Out</span></a></li>
+            </ul>
+        </nav>
+
+      <main class="main-content">
+        <div class="dashboard-tabs">
+            <button class="tab-button active" data-tab="decks"><i class="fas fa-layer-group"></i> My Decks</button>
+            <button class="tab-button" data-tab="browse"><i class="fas fa-search"></i> Card Browser</button>
+        </div>
+
+        <div id="decks-content" class="tab-content active">
+            <header class="content-header">
+              <h2>My Decks</h2>
+              <button
+                class="btn primary-btn"
+                onclick="location.href='/create-deck'"
+              >
+                <i class="fas fa-plus"></i> Create New Deck
+              </button>
+            </header>
+
+            <div class="stats-grid">
+              <div class="stat-card fade-in-up">
+                <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+                <div class="stat-info">
+                  <h3>Total Decks</h3>
+                  <p>...</p>
+                </div>
+              </div>
+              <div class="stat-card fade-in-up delay-100">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-info">
+                  <h3>Cards Mastered</h3>
+                  <p>...</p>
+                </div>
+              </div>
+              <div class="stat-card fade-in-up delay-200" id="points-stat-card">
+                <div class="stat-icon"><i class="fas fa-star"></i></div>
+                <div class="stat-info">
+                  <h3>My Points</h3>
+                  <p>...</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="decks-grid">
+            </div>
+        </div>
+
+        <div id="browse-content" class="tab-content card-browser-section">
+            <header class="content-header">
+                <h2>Browse Your Cards</h2>
+            </header>
+            <div class="card-browser-filters">
+                <input type="search" id="card-search-input" placeholder="Search card content (front, back)..." />
+                <select id="deck-filter-select">
+                     <option value="">All Decks</option>
+                </select>
+                <select id="tag-filter-select" multiple title="Select tags to filter by (Ctrl/Cmd + click for multiple)">
+                </select>
+                <button id="apply-card-filter-btn" class="btn primary-btn">
+                    <i class="fas fa-search"></i> Search
+                </button>
+                <button id="clear-card-filter-btn" class="btn tertiary-btn" title="Clear all filters"> 
+                    <i class="fas fa-times-circle"></i> Clear
+                </button>
+            </div>
+
+            <div class="card-browser-actions">
+                <button id="create-custom-deck-btn" class="btn secondary-btn" disabled>
+                    <i class="fas fa-plus-circle"></i> Create Deck from Selected
+                </button>
+            </div>
+
+            <div id="card-results-container">
+                <div id="loading-cards-message" style="display:none;">
+                    <i class="fas fa-spinner fa-spin"></i> Loading cards...
+                </div>
+                <table class="card-results-table" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all-cards-checkbox" title="Select all/none"></th>
+                            <th>Front</th>
+                            <th>Back</th>
+                            <th>Deck</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody id="card-results-tbody">
+                    </tbody>
+                </table>
+                <p id="no-cards-found-message" style="display:none;">No cards found matching your criteria.</p>
+                <p id="card-browser-initial-message">Use the filters above to search for your cards.</p>
+            </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="{{url_for('static', filename='js/dashboard.js')}}"></script>
+  </body>
+</html>

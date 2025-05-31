@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/global.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/create-deck.css')}}" />
+    <title>Create Deck - NeuroFlash</title>
+    <style>
+      #addCard {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        z-index: 1000;
+        /* You can add more specific FAB styling here if you want a circular button, e.g.:
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        */
+      }
+      /* If using a circular FAB and you want to hide text, add a span around text:
+      #addCard .button-text { display: none; }
+      #addCard i { margin-right: 0; }
+      */
+    </style>
+  </head>
+
+  <body>
+     <div class="app-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h1>Neuro<span>Flash</span></h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li><a href="/study"><i class="fas fa-book-open"></i><span>Study</span></a></li>
+                <li><a href="/results"><i class="fas fa-chart-line"></i><span>Results</span></a></li>
+                <li><a href="/profile"><i class="fas fa-user"></i><span>Profile</span></a></li>
+                <li class="active"><a href="/leaderboard"><i class="fas fa-trophy"></i><span>Leaderboard</span></a></li>
+                <li><a href="/api/logout"><i class="fas fa-sign-out-alt"></i><span>Log Out</span></a></li>
+            </ul>
+        </nav>
+
+      <main class="main-content">
+        <header class="content-header">
+          <h2>Create New Deck</h2>
+          <div class="header-actions">
+            <button class="btn secondary-btn" id="saveDraft">
+              Save as Draft
+            </button>
+            <button class="btn primary-btn" id="createDeck">Create Deck</button>
+          </div>
+        </header>
+
+        <div class="create-deck-container">
+          <div class="deck-settings">
+            <div class="form-group">
+              <label for="deck-name">Deck Name</label>
+              <input
+                type="text"
+                id="deck-name"
+                placeholder="e.g., JavaScript Fundamentals"
+              />
+            </div>
+            <div class="form-group">
+              <label for="deck-description">Description</label>
+              <textarea
+                id="deck-description"
+                placeholder="Brief description of the deck"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Tags</label>
+              <div class="tags-input">
+                <div class="tags-list" id="tagsList"></div>
+                <input type="text" id="tagInput" placeholder="Add a tag" />
+              </div>
+            </div>
+          </div>
+
+          <div class="cards-section">
+            <div class="section-header">
+              <h3>Flashcards</h3>
+              <!-- The "Add Card" button is still here structurally, but CSS makes it float -->
+            </div>
+            <div class="cards-list" id="cardsList">
+                <!-- Cards will be added here by JS -->
+            </div>
+          </div>
+        </div>
+        <!-- Moved Add Card button outside of cards-section for cleaner fixed positioning context, though CSS could handle it inside too -->
+        <button class="btn secondary-btn" id="addCard">
+            <i class="fas fa-plus"></i> Add Card
+        </button>
+      </main>
+    </div>
+
+    <script src="{{url_for('static', filename='js/create-deck.js')}}"></script>
+  </body>
+</html>
